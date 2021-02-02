@@ -1,10 +1,14 @@
+  def awsCredentials = [[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]
+
   pipeline {
     agent {
       node {
         label "master"
       } 
     }
-
+    options {
+      withCredentials(awsCredentials)
+    }
     stages {
       stage('fetch_latest_code') {
         steps {
@@ -13,10 +17,6 @@
       }
 
       stage('TF Init&Plan') {
-        environment {
-          aws_access_key_id= credentials('aws_access_key_id')
-          aws_secret_access_key= credentials('aws_secret_access_key')
-        }
         steps {
           sh 'terraform init'
           sh 'terraform plan'
